@@ -24,7 +24,9 @@
 							</li>
 						</ul>
 						<div class="page-btn">
-							<a href="#" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#add-customer"><i class="ti ti-circle-plus me-1"></i>Add Customer</a>
+							<a href="{{ route('customers.create') }}" class="btn btn-primary text-white">
+    <i class="ti ti-circle-plus me-1"></i> Add Customer
+</a>
 						</div>
 					</div>
 					<!-- /product list -->
@@ -75,7 +77,7 @@
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Country: activate to sort column ascending" style="width: 51.6094px;">Address</th>
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Country: activate to sort column ascending" style="width: 51.6094px;">City</th>
                                             <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 49.7656px;">Status</th>
-                                            <th class="no-sort sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label=": activate to sort column ascending" style="width: 106.859px;">Action</th></tr>
+                                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 49.7656px;">Action</th>
 									</thead>
 									<tbody>
 
@@ -95,7 +97,7 @@
 											<td>
 												<div class="d-flex align-items-center">
 													<a href="javascript:void(0);" class="avatar avatar-md me-2">
-														<img src="{{asset("assets")}}/img/users/user-33.png" alt="product">
+														<img src="{{ asset('storage/' . $customer->photos) }}" alt="{{ $customer->customer_name }}">
 													</a>
 													<a href="javascript:void(0);">{{$customer->customer_name}}</a>
 												</div>

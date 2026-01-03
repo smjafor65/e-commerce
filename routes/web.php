@@ -4,9 +4,9 @@ use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('pages.dashboard.index');
-});
+// Route::get('/', function () {
+//     return view('pages.dashboard.index');
+// });
 // Route::prefix("")->group(function (){
 //     Route::resource("",)
 // })
@@ -22,11 +22,25 @@ Route::get('/', function () {
 
 //      }
 // });
- Route::resource('customers', CustomerController::class);
-Route::prefix("/")->group(function(){
+// Route::prefix("/people")->group(function(){
+//     Route::resource('customers', CustomerController::class);
 
-});
+// });
+
+// Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/', function () {
+        return view('pages.dashboard.index');
+    });
+
+    Route::prefix('/people')->group(function () {
+        Route::resource('customers', CustomerController::class);
+    });
+
+});
