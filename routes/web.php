@@ -1,0 +1,32 @@
+<?php
+
+use App\Http\Controllers\CustomerController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('pages.dashboard.index');
+});
+// Route::prefix("")->group(function (){
+//     Route::resource("",)
+// })
+
+
+// Route::get('/test', function () {
+//      $data= Customer::get();
+//      foreach ($data as $key => $value) {
+//        echo  $value->customer_name;
+//         foreach ($value->address as $key => $value) {
+//           echo   $value->address;
+//         } ;
+
+//      }
+// });
+ Route::resource('customers', CustomerController::class);
+Route::prefix("/")->group(function(){
+
+});
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
