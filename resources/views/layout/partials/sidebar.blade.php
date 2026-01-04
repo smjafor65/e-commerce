@@ -87,7 +87,7 @@
 										<li><a href="sales-dashboard.html">Sales Dashboard</a></li>
 									</ul>
 								</li>
-								
+
 							</ul>
 						</li>
 						<li class="submenu-open">
@@ -192,7 +192,7 @@
 						<li class="submenu-open">
 							<h6 class="submenu-hdr">Peoples</h6>
 							<ul>
-								<li><a href="customers.html"><i class="ti ti-users-group fs-16 me-2"></i><span>Customers</span></a></li>
+								<li><a href="{{route('customers.index')}}"><i class="ti ti-users-group fs-16 me-2"></i><span>Customers</span></a></li>
 								<li><a href="billers.html"><i class="ti ti-user-up fs-16 me-2"></i><span>Billers</span></a></li>
 								<li><a href="suppliers.html"><i class="ti ti-user-dollar fs-16 me-2"></i><span>Suppliers</span></a></li>
 								<li><a href="store-list.html"><i class="ti ti-home-bolt fs-16 me-2"></i><span>Stores</span></a></li>
