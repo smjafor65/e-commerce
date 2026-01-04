@@ -41,7 +41,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('/people')->group(function () {
-        Route::resource('customers', CustomerController::class);
+        Route::resource('customers',CustomerController::class);
     });
     Route::prefix('/inventory')->group(function () {
         Route::resource('products', ProductController::class);

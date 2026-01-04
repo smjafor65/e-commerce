@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
+
 use App\Http\Requests\UpdateCustomerRequest;
+
 use App\Models\Customers\Customer ;
 use App\Models\Customers\CustomerProfile;
 use Illuminate\Http\Request;
@@ -43,11 +45,14 @@ class CustomerController extends Controller
             });
         })
         ->orderBy('id', 'desc')
+
         ->paginate($perPage)
         ->withQueryString();
 
     return view('pages.people.customer.index', compact('customers', 'perPage'));
 }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -157,13 +162,11 @@ class CustomerController extends Controller
 {
 
 
-// print_r( $request->all());
+
     DB::beginTransaction();
 
     try {
-        // ======================
-        //  PHOTO UPDATE
-        // ======================
+
         $imagePath = $customer->photos;
 
         if ($request->hasFile('photo')) {
@@ -177,9 +180,7 @@ class CustomerController extends Controller
             $imagePath = $request->photo->storeAs('customers', $imageName, 'public');
         }
 
-        // ======================
-        //  CUSTOMER UPDATE
-        // ======================
+
         $customer->update([
             'customer_name' => $request->customer_name,
             'email'         => $request->email,
@@ -189,16 +190,14 @@ class CustomerController extends Controller
             'photos'        => $imagePath,
         ]);
 
-        // update password only if provided
+
         if ($request->filled('password')) {
             $customer->update([
                 'password' => Hash::make($request->password),
             ]);
         }
 
-        // ======================
-        //  ADDRESS UPDATE
-        // ======================
+
         $customer->address()->updateOrCreate(
             ['type' => $request->address_type], // condition
             [
@@ -209,9 +208,7 @@ class CustomerController extends Controller
             ]
         );
 
-        // ======================
-        //  NOTE UPDATE
-        // ======================
+
         if ($request->filled('note')) {
             $customer->notes()->updateOrCreate(
                 [],
@@ -229,7 +226,7 @@ class CustomerController extends Controller
 
         DB::rollBack();
 
-        // rollback new image if failed
+
         if ($request->hasFile('photo') && isset($imagePath)) {
             Storage::disk('public')->delete($imagePath);
         }

@@ -96,7 +96,7 @@
                                              <a class="dropdown-item" href="{{ route('customers.show', $customer->id) }}">
                     <i class="feather feather-eye me-1"></i> View
                 </a>
-                                        
+            
                                         </li>
                                         <li>
                                             <a class="dropdown-item" href="{{ route('customers.edit', $customer->id) }}">
