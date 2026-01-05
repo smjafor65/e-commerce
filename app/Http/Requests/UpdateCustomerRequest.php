@@ -34,7 +34,7 @@ class UpdateCustomerRequest extends FormRequest
             // password optional on update
             'password' => ['nullable', 'min:6', 'confirmed'],
 
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
 
             // address
             'address_type' => ['required', 'in:shipping,billing'],

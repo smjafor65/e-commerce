@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
-// use App\Models\Product;
-use App\Models\Products\Product ;
+use App\Models\Products\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -44,9 +43,9 @@ public function store(ProductRequest $request)
     try {
         $thumbnailName = null;
         if($request->hasFile('thumbnail')){
-             if (!Storage::exists('public/products')) {
-        Storage::makeDirectory('public/products');
-    }
+             if (!Storage::disk('public')->exists('products')) {
+                Storage::disk('public')->makeDirectory('products');
+            }
 
             $thumbnailName = 'product_' . Str::uuid() . '.' . $request->thumbnail->extension();
             $request->thumbnail->storeAs('products', $thumbnailName,'public');
@@ -77,6 +76,11 @@ public function store(ProductRequest $request)
     }
 }
 
+   public function show(Product $product)
+    {
+         return view('pages.product.view', compact('product'));
+    }
+
 public function edit(Product $product)
 {
     return view('pages.product.edit', compact('product'));
@@ -88,12 +92,12 @@ public function update(ProductRequest $request, Product $product)
 
     try {
         // 1. Handle thumbnail upload
-        $thumbnailName = $product->thumbnail; // default to old thumbnail
+        $thumbnailName = $product->thumbnail;
 
         if ($request->hasFile('thumbnail')) {
             // Delete old thumbnail if exists
-            if ($product->thumbnail && Storage::exists('public/products/' . $product->thumbnail)) {
-                Storage::delete('public/products/' . $product->thumbnail);
+            if ($product->thumbnail && Storage::disk('public')->exists('products/' . $product->thumbnail)) {
+                Storage::disk('public')->delete('products/' . $product->thumbnail);
             }
 
             // Store new file
@@ -133,8 +137,8 @@ public function destroy(Product $product)
 {
     DB::beginTransaction();
     try {
-        if($product->thumbnail && Storage::exists('public/products/' . $product->thumbnail)){
-            Storage::delete('public/products/' . $product->thumbnail);
+        if($product->thumbnail && Storage::disk('public')->exists('products/' . $product->thumbnail)){
+            Storage::disk('public')->delete('products/' . $product->thumbnail);
         }
 
         $product->delete();
@@ -145,5 +149,44 @@ public function destroy(Product $product)
         DB::rollBack();
         return back()->with('error', $e->getMessage());
     }
+}
+
+
+public function lowStockReport()
+{
+    $criticalLimit = config('inventory.critical');
+    $warningLimit  = config('inventory.warning');
+
+
+    $criticalStock = Product::where('stock', '<', $criticalLimit)
+        ->orderBy('category')
+        ->orderBy('brand')
+        ->get()
+        ->groupBy([
+            'category',
+            'brand',
+        ]);
+
+
+    $warningStock = Product::whereBetween('stock', [$criticalLimit, $warningLimit - 1])
+        ->orderBy('category')
+        ->orderBy('brand')
+        ->get()
+        ->groupBy([
+            'category',
+            'brand',
+        ]);
+
+
+    $categorySummary = Product::selectRaw('category, COUNT(*) as items, SUM(stock) as total_stock')
+        ->groupBy('category')
+        ->orderBy('category')
+        ->get();
+
+    return view('pages.product.low-stock', compact(
+        'criticalStock',
+        'warningStock',
+        'categorySummary'
+    ));
 }
 }

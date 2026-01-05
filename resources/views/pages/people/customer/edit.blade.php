@@ -68,6 +68,7 @@
             <div class="card-header">Profile Photo</div>
             <div class="card-body">
                 <input type="file" name="photo" class="form-control mb-2">
+                @error('photo') <div class="text-danger small">{{ $message }}</div> @enderror
 
                 @if($customer->photos)
                     <img src="{{ asset('storage/'.$customer->photos) }}"

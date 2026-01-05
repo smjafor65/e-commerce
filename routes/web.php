@@ -36,9 +36,11 @@ Auth::routes();
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/', function () {
-        return view('pages.dashboard.index');
-    });
+   Route::get('/', function () {
+    return view('pages.dashboard.index');
+    })->name('dashboard');
+    Route::get('/inventory/low-stock', [ProductController::class, 'lowStockReport'])
+    ->name('inventory.low-stock');
 
     Route::prefix('/people')->group(function () {
         Route::resource('customers',CustomerController::class);

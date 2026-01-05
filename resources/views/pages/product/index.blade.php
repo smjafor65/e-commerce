@@ -33,39 +33,70 @@
                 <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100 text-center">
 
                     <!-- Product Image -->
-                    <img src="{{ asset('storage/products/' . $product->thumbnail) }}"
-                         class="card-img-top"
-                         style="height:220px; object-fit:cover;">
+                    @if($product->thumbnail && file_exists(public_path('storage/products/' . $product->thumbnail)))
+                        <img src="{{ asset('storage/products/' . $product->thumbnail) }}"
+                            class="card-img-top"
+                            style="height:220px; object-fit:cover;">
+                    @else
+                        <img src="{{ asset('assets/img/products/product-01.jpg') }}"
+                            class="card-img-top"
+                            style="height:220px; object-fit:cover;">
+                    @endif
 
                     <!-- Card Body -->
                     <div class="card-body d-flex flex-column p-3">
-<!-- Product Info -->
-<h5 class="card-title fw-bold fs-4 text-dark mb-2">{{ $product->name }}</h5>
+                        <!-- Product Info -->
+                        <h5 class="card-title fw-bold fs-4 text-dark mb-2">{{ $product->name }}</h5>
 
-<p class="mb-1 text-dark"><strong>SKU:</strong> <span class="text-dark">{{ $product->sku }}</span></p>
-
-<p class="mb-1 text-dark fw-semibold"><strong>Price:</strong> ${{ number_format($product->price, 2) }}
-
-@if($product->sale_price)
-    <span class="mb-1  text-success fw-bold"><strong>Sale:</strong> ${{ number_format($product->sale_price, 2) }}</span></p>
-@endif
-
-<p class="mb-2  text-dark"><strong>Stock:</strong> {{ $product->stock }} <span class="text-dark">{{ $product->unit }}</span></p>
+                        <p class="mb-1 text-dark"><strong>SKU:</strong> {{ $product->sku }}</p>
+                        <p class="mb-1 text-dark fw-semibold"><strong>Price:</strong> ${{ number_format($product->price, 2) }}
+                        @if($product->sale_price)
+                            <span class="mb-1 text-success fw-bold"><strong>Sale:</strong> ${{ number_format($product->sale_price, 2) }}</span>
+                        @endif
+                        </p>
+                        <p class="mb-2 text-dark"><strong>Stock:</strong> {{ $product->stock }} {{ $product->unit }}</p>
 
                         <!-- Buttons 2x2 Grid -->
                         <div class="d-grid gap-2 mt-auto">
                             <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning flex-fill fw-semibold ">Edit</a>
-                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-info flex-fill fw-semibold  text-white">View</a>
+                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning flex-fill fw-semibold">Edit</a>
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-info flex-fill fw-semibold text-white">View</a>
                             </div>
                             <div class="d-flex gap-2 justify-content-center flex-wrap">
-                                <button class="btn btn-danger flex-fill fw-semibold " data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $product->id }}" data-name="{{ $product->name }}">Delete</button>
-                                <form action="" method="POST" class="flex-fill">
+                                <!-- Delete Button triggers reusable modal -->
+                                <button class="btn btn-danger flex-fill fw-semibold delete-btn" data-bs-toggle="modal" data-bs-target="#delete-modal-{{ $product->id }}" href="#">
+                                               Delete
+
+                                </button>
+
+                                <form action="#" method="POST" class="flex-fill">
                                     @csrf
-                                    <button type="submit" class="btn btn-success flex-fill fw-semibold  ">Add to Cart</button>
+                                    <button type="submit" class="btn btn-success flex-fill fw-semibold">Add to Cart</button>
                                 </form>
                             </div>
                         </div>
+                         <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="delete-modal-{{ $product->id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Delete Product</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete <strong>{{ $product->name }}</strong>?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
 
                     </div>
                 </div>
@@ -84,45 +115,9 @@
 
 </div>
 
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <form method="POST" id="deleteForm">
-        @csrf
-        @method('DELETE')
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">Delete Product</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete <strong id="productName"></strong>?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-danger">Yes, Delete</button>
-            </div>
-        </div>
-    </form>
-  </div>
-</div>
+<!-- Reusable Delete Modal -->
 
-<!-- Delete Modal Script -->
-@push('scripts')
-<script>
-    var deleteModal = document.getElementById('deleteModal')
-    deleteModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget
-        var productId = button.getAttribute('data-id')
-        var productName = button.getAttribute('data-name')
-
-        var modalTitle = deleteModal.querySelector('#productName')
-        modalTitle.textContent = productName
-
-        var form = deleteModal.querySelector('#deleteForm')
-        form.action = '/products/' + productId
-    })
-</script>
-@endpush
 
 @endsection
+
+

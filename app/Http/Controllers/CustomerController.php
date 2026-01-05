@@ -171,13 +171,25 @@ class CustomerController extends Controller
 
         if ($request->hasFile('photo')) {
 
-            // delete old photo
+            $file = $request->file('photo');
+
+            // ensure uploaded file is valid
+            if (!$file->isValid()) {
+                return back()->withInput()->with('error', 'Uploaded photo is invalid.');
+            }
+
+            // delete old photo if exists
             if ($customer->photos && Storage::disk('public')->exists($customer->photos)) {
                 Storage::disk('public')->delete($customer->photos);
             }
 
-            $imageName = 'customer_' . Str::uuid() . '.' . $request->photo->extension();
-            $imagePath = $request->photo->storeAs('customers', $imageName, 'public');
+            // ensure customers directory exists
+            if (!Storage::disk('public')->exists('customers')) {
+                Storage::disk('public')->makeDirectory('customers');
+            }
+
+            $imageName = 'customer_' . Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('customers', $imageName, 'public');
         }
 
 

@@ -35,7 +35,7 @@ class ProductRequest extends FormRequest
             'stock'       => 'required|integer|min:0',
             'unit'        => ['required', Rule::in(['pcs','kg','pack','pair'])],
             'status'      => ['required', Rule::in(['active','inactive','out_of_stock'])],
-            'thumbnail'   => $productId ? 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'thumbnail'   => $productId ? 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
         ];
     }
 
