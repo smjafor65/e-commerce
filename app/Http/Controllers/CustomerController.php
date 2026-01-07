@@ -265,4 +265,10 @@ class CustomerController extends Controller
 
     return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }
+
+      public function find($id)
+{
+    $customer = Customer::with(['address'])->findOrFail($id);
+    return response()->json($customer);
+}
 }
